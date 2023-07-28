@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Recorder</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <h1>Badminton Score Recorder</h1>
+
+  <form id="game-form">
+    <label for="date">Date (dd-mm-yyyy):</label>
+    <input type="text" id="date" name="date" required><br>
+    
+    <label for="player1">Player 1:</label>
+    <input type="text" id="player1" name="player1" required><br>
+    
+    <label for="player2">Player 2:</label>
+    <input type="text" id="player2" name="player2" required><br>
+    
+    <label for="scorePlayer1">Score of Player 1:</label>
+    <input type="number" id="scorePlayer1" name="scorePlayer1" required><br>
+    
+    <label for="scorePlayer2">Score of Player 2:</label>
+    <input type="number" id="scorePlayer2" name="scorePlayer2" required><br>
+    
+    <button type="submit">Record Game</button>
+  </form>
+
+  <h2>Game Records</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Player 1</th>
+        <th>Player 2</th>
+        <th>Score of Player 1</th>
+        <th>Score of Player 2</th>
+        <th>Winner</th>
+      </tr>
+    </thead>
+    <tbody id="score-board">
+      <!-- Game records will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
