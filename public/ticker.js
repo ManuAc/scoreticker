@@ -77,6 +77,21 @@ async function loadScoreBoard() {
     const scoreBoard = document.getElementById('score-board');
     scoreBoard.innerHTML = '';
 
+    data.sort((a, b) => {
+      // Sort by date (oldest to newest)
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+
+      // If dates are equal, sort by winner's name
+      if (a.winner < b.winner) return -1;
+      if (a.winner > b.winner) return 1;
+
+      // If both date and winner's name are equal, maintain original order
+      return 0;
+    });
+
     data.forEach((game) => {
       const row = document.createElement('tr');
       row.innerHTML = `
