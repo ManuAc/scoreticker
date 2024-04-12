@@ -124,7 +124,7 @@ async function loadScoreBoard() {
 async function displayDocuments() {
 
    try {
-      const response = await fetch('/getGameRecords', {
+      const response = await fetch('/getSummary', {
        // Optional: If you have added a security check for the API key
        // headers: {
        //   'Authorization': 'YOUR_API_KEY'
@@ -132,10 +132,11 @@ async function displayDocuments() {
      });
 
      if (!response.ok) {
-       throw new Error('Failed to fetch game records.');
+       throw new Error('Failed to fetch summary records.');
      }
 
      const documents = await response.json();
+     console.log('Summary records loaded successfully:', documents);
 
      const container = document.getElementById("documentContainer");
      for (const [id, data] of Object.entries(documents)) {
