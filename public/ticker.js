@@ -120,8 +120,52 @@ async function loadScoreBoard() {
   }
 }
 
+  // Function to display each document in a tile
+async function displayDocuments() {
+
+   try {
+      const response = await fetch('/getGameRecords', {
+       // Optional: If you have added a security check for the API key
+       // headers: {
+       //   'Authorization': 'YOUR_API_KEY'
+       // }
+     });
+
+     if (!response.ok) {
+       throw new Error('Failed to fetch game records.');
+     }
+
+     const documents = await response.json();
+
+     const container = document.getElementById("documentContainer");
+     for (const [id, data] of Object.entries(documents)) {
+       const tile = document.createElement("div");
+       tile.className = "tile";
+
+       const header = document.createElement("div");
+       header.className = "header";
+       header.textContent = `Document ID: ${id}`;
+       tile.appendChild(header);
+
+       for (const [key, value] of Object.entries(data)) {
+         const content = document.createElement("div");
+         content.className = "content";
+         content.textContent = `${key}: ${value}`;
+         tile.appendChild(content);
+       }
+
+       container.appendChild(tile);
+     }
+   } catch (error) {
+    console.error('Error fetching game records:', error.message);
+  }
+}
+
 // Attach the handleSubmit function to the form submit event
 document.getElementById('game-form').addEventListener('submit', handleSubmit);
+
+// Load summary tiles
+displayDocuments()
 
 // Load the scoreboard on page load
 loadScoreBoard();
