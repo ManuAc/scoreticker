@@ -145,16 +145,36 @@ async function displayDocuments() {
 
        const header = document.createElement("div");
        header.className = "header";
-       header.textContent = `Document ID: ${id}`;
+       header.textContent = `Player: ${id}`;
        tile.appendChild(header);
 
+       const summary = document.createElement("div");
+       summary.innerHTML = '';
+
+       const row = document.createElement('tr');
+       row.innerHTML = `
+            <th>Opponent</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Percentage</th>
+        `;
+
+       summary.appendChild(row)
+
        for (const [key, value] of Object.entries(data)) {
-         const content = document.createElement("div");
-         content.className = "content";
-         content.textContent = `${key}: ${value}`;
-         tile.appendChild(content);
+
+         const data_row = document.createElement('tr');
+          data_row.innerHTML = `
+            <td>${key}</td>
+            <td>${value.Wins}</td>
+            <td>${value.Losses}</td>
+            <td>${value.Percentage}</td>
+        `;
+
+          summary.appendChild(data_row)
        }
 
+       tile.appendChild(summary)
        container.appendChild(tile);
      }
    } catch (error) {

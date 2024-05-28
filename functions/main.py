@@ -74,12 +74,9 @@ def get_game_summary(request):
 
         for name in players:
 
-            collection_ref = firestore.client().collection(name)
-            docs = collection_ref.stream()
+            docs = firestore.client().collection(name).get()
             doc_map = {doc.id: doc.to_dict() for doc in docs}
-
-            if doc_map:
-                summary[name] = doc_map
+            summary[name] = doc_map
 
         return jsonify(summary), 200
 
