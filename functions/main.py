@@ -6,6 +6,7 @@ from firebase_functions import https_fn, options
 from firebase_admin import firestore
 from firebase_admin import initialize_app
 from flask import request, jsonify
+import json
 
 # Initialize Firebase Admin SDK
 initialize_app()
@@ -16,33 +17,50 @@ initialize_app()
 )
 def add_game_record(request):
     try:
-        data = request.get_json()
-        date = data.get('date')
-        player1 = data.get('player1')
-        player2 = data.get('player2')
-        score_player1 = data.get('scorePlayer1')
-        score_player2 = data.get('scorePlayer2')
-        winner = data.get('winner')
+        # Update games collection
+        game_data = request.get_json()
+        firestore.client().collection("games").add(game_data)
 
-        # Validate the request data
-        if not all([date, player1, player2, score_player1, score_player2, winner]):
-            return jsonify({'error': 'Invalid request data.'}), 400
+        # Update summary collection for player 1
+        update_summary(game_data["player1"], game_data["player2"], game_data["winner"])
 
-        # Add the game record to Firestore
-        game_record_ref = firestore.client().collection('gameRecords').add({
-            'date': date,
-            'player1': player1,
-            'player2': player2,
-            'scorePlayer1': score_player1,
-            'scorePlayer2': score_player2,
-            'winner': winner
-        })
+        # Update summary collection for player 2
+        update_summary(game_data["player2"], game_data["player1"], game_data["winner"])
 
         return jsonify({'status': 'ok'}), 200
 
     except Exception as e:
         print('Error adding game record:', e)
-        return jsonify({'error': 'Failed to add game record.'}), 500
+        return jsonify({'error': f"Failed to add game record {e}."}), 500
+
+
+def update_summary(player_name, opponent, winner):
+    summary_ref = firestore.client().collection('summary').where('player', '==', player_name).where('opponent', '==', opponent)
+    docs = list(summary_ref.stream())
+    if docs:
+        for doc in docs:
+            doc_data = doc.to_dict()
+
+            if doc_data["player"] != player_name or doc_data["opponent"] != opponent:
+                continue
+
+            doc_id = doc.id
+            if doc_data["player"] == winner:
+                doc_data['wins'] += 1
+            else:
+                doc_data['losses'] += 1
+            doc_data['gamesPlayed'] += 1
+            firestore.client().collection('summary').document(doc_id).update(doc_data)
+    else:
+        # If no document exists for this player, create one
+        new_doc_data = {
+            'player': player_name,
+            'opponent': opponent,
+            'gamesPlayed': 1,
+            'wins': 1 if winner == player_name else 0,
+            'losses': 0 if winner == player_name else 1
+        }
+        firestore.client().collection('summary').add(new_doc_data)
 
 
 @https_fn.on_request(
@@ -50,13 +68,12 @@ def add_game_record(request):
 )
 def get_game_records(request):
     try:
-        # Retrieve game records from Firestore
-        game_records = []
-        docs = firestore.client().collection('gameRecords').get()
-        for doc in docs:
-            game_records.append(doc.to_dict())
-
-        return jsonify(game_records), 200
+        games_ref = firestore.client().collection("games").order_by('date', direction=firestore.Query.DESCENDING).stream()
+        games_data = []
+        for doc in games_ref:
+            doc_data = doc.to_dict()
+            games_data.append(doc_data)
+        return json.dumps(games_data), 200
 
     except Exception as e:
         print('Error retrieving game records:', e)
@@ -68,18 +85,13 @@ def get_game_records(request):
 )
 def get_game_summary(request):
     try:
-        # Retrieve summaries for each player
-        players = ["manu", "sabari", "rishabh", "karan", "akash"]
-        summary = {}
-
-        for name in players:
-
-            docs = firestore.client().collection(name).get()
-            doc_map = {doc.id: doc.to_dict() for doc in docs}
-            summary[name] = doc_map
-
-        return jsonify(summary), 200
+        summary_ref = firestore.client().collection("summary").stream()
+        summary_data = []
+        for doc in summary_ref:
+            doc_data = doc.to_dict()
+            summary_data.append(doc_data)
+        return json.dumps(summary_data), 200
 
     except Exception as e:
-        print('Error retrieving game records:', e)
-        return jsonify({'error': 'Failed to retrieve game records.'}), 500
+        print('Error retrieving summary records:', e)
+        return jsonify({'error': 'Failed to retrieve summary records.'}), 500

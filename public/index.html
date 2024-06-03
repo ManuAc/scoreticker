@@ -1,61 +1,74 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Score Recorder</title>
-  <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump Droppers</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-
-<div>
-  <div>
-    <h1>Badminton Score Recorder</h1>
-
-    <form id="game-form">
-      <label for="date">Date (dd-mm-yyyy):</label>
-      <input type="text" id="date" name="date" required><br>
-    
-      <label for="player1">Player 1:</label>
-      <input type="text" id="player1" name="player1" required><br>
-    
-      <label for="player2">Player 2:</label>
-      <input type="text" id="player2" name="player2" required><br>
-    
-      <label for="scorePlayer1">Score of Player 1:</label>
-      <input type="number" id="scorePlayer1" name="scorePlayer1" required><br>
-    
-      <label for="scorePlayer2">Score of Player 2:</label>
-      <input type="number" id="scorePlayer2" name="scorePlayer2" required><br>
-    
-      <button type="submit">Record Game</button>
-    </form>
-  </div>
-
-  <div id="summary-section"></div>
-    <div id="documentContainer"></div>
-  </div>
-
-</div>
-
-  <h1>Game Records</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Player 1</th>
-        <th>Player 2</th>
-        <th>Score of Player 1</th>
-        <th>Score of Player 2</th>
-        <th>Winner</th>
-      </tr>
-    </thead>
-    <tbody id="score-board">
-      <!-- Game records will be dynamically inserted here -->
-    </tbody>
-  </table>
-
-  <script src="bundle.js"></script>
+    <div class="container">
+        <div class="top-row">
+            <div class="form-container">
+                <h2>Add Game Record</h2>
+                <form id="gameForm">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                    <label for="player1">Player 1:</label>
+                    <select id="player1" name="player1" required>
+                        <option value="">Select Player 1</option>
+                        <option value="Akash">Akash</option>
+                        <option value="Anurag">Anurag</option>
+                        <option value="Bumbu">Bumbu</option>
+                        <option value="Karan">Karan</option>
+                        <option value="Manu">Manu</option>
+                        <option value="Rishabh">Rishabh</option>
+                        <option value="Sabari">Sabari</option>
+                    </select>
+                    <label for="player2">Player 2:</label>
+                    <select id="player2" name="player2" required>
+                        <option value="">Select Player 2</option>
+                        <option value="Akash">Akash</option>
+                        <option value="Anurag">Anurag</option>
+                        <option value="Bumbu">Bumbu</option>
+                        <option value="Karan">Karan</option>
+                        <option value="Manu">Manu</option>
+                        <option value="Rishabh">Rishabh</option>
+                        <option value="Sabari">Sabari</option>
+                    </select>
+                    <label for="score1">Score Player 1:</label>
+                    <input type="number" id="score1" name="score1" required>
+                    <label for="score2">Score Player 2:</label>
+                    <input type="number" id="score2" name="score2" required>
+                    <button type="submit">Add Record</button>
+                </form>
+            </div>
+            <div class="table-container">
+                <h2>Game Records</h2>
+                <table id="gameTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Player 1</th>
+                            <th>Player 2</th>
+                            <th>Score Player 1</th>
+                            <th>Score Player 2</th>
+                            <th>Winner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bottom-row">
+            <div class="summary-container">
+                <div id="summaryGrid" class="summary-grid">
+                    <!-- Summary will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="bundle.js"></script>
 </body>
 </html>
