@@ -7,6 +7,7 @@ from firebase_admin import firestore
 from firebase_admin import initialize_app
 from flask import request, jsonify
 import json
+from datetime import datetime
 
 # Initialize Firebase Admin SDK
 initialize_app()
@@ -16,16 +17,19 @@ initialize_app()
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def add_game_record(request):
+    year = datetime.now().year
+    collection_name = f"games_{year}"
+
     try:
         # Update games collection
         game_data = request.get_json()
-        firestore.client().collection("games").add(game_data)
+        firestore.client().collection(collection_name).add(game_data)
 
         # Update summary collection for player 1
-        update_summary(game_data["player1"], game_data["player2"], game_data["winner"])
+        update_summary(game_data["player1"], game_data["player2"], game_data["winner"], year)
 
         # Update summary collection for player 2
-        update_summary(game_data["player2"], game_data["player1"], game_data["winner"])
+        update_summary(game_data["player2"], game_data["player1"], game_data["winner"], year)
 
         return jsonify({'status': 'ok'}), 200
 
@@ -34,9 +38,12 @@ def add_game_record(request):
         return jsonify({'error': f"Failed to add game record {e}."}), 500
 
 
-def update_summary(player_name, opponent, winner):
-    summary_ref = firestore.client().collection('summary').where('player', '==', player_name).where('opponent', '==', opponent)
+def update_summary(player_name, opponent, winner, year):
+    collection_name = f"summary_{year}"
+
+    summary_ref = firestore.client().collection(collection_name).where('player', '==', player_name).where('opponent', '==', opponent)
     docs = list(summary_ref.stream())
+
     if docs:
         for doc in docs:
             doc_data = doc.to_dict()
@@ -50,7 +57,7 @@ def update_summary(player_name, opponent, winner):
             else:
                 doc_data['losses'] += 1
             doc_data['gamesPlayed'] += 1
-            firestore.client().collection('summary').document(doc_id).update(doc_data)
+            firestore.client().collection(collection_name).document(doc_id).update(doc_data)
     else:
         # If no document exists for this player, create one
         new_doc_data = {
@@ -60,15 +67,18 @@ def update_summary(player_name, opponent, winner):
             'wins': 1 if winner == player_name else 0,
             'losses': 0 if winner == player_name else 1
         }
-        firestore.client().collection('summary').add(new_doc_data)
+        firestore.client().collection(collection_name).add(new_doc_data)
 
 
 @https_fn.on_request(
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def get_game_records(request):
+    year = request.args.get('year')
+    collection_name = f"games_{year}" if year else "games"
+
     try:
-        games_ref = firestore.client().collection("games").order_by('date', direction=firestore.Query.DESCENDING).stream()
+        games_ref = firestore.client().collection(collection_name).order_by('date', direction=firestore.Query.DESCENDING).stream()
         games_data = []
         for doc in games_ref:
             doc_data = doc.to_dict()
@@ -84,8 +94,11 @@ def get_game_records(request):
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def get_game_summary(request):
+    year = request.args.get('year')
+    collection_name = f"summary_{year}" if year else "summary"
+
     try:
-        summary_ref = firestore.client().collection("summary").stream()
+        summary_ref = firestore.client().collection(collection_name).stream()
         summary_data = []
         for doc in summary_ref:
             doc_data = doc.to_dict()

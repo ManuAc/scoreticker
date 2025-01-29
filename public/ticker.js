@@ -13,17 +13,16 @@ function addGameRecord(gameData) {
     })
     .then(data => {
         console.log(data)
-            // Reload other sections
-        getGameRecords();
-
-        getGameSummary();
+        
+        // Reload other sections
+        filterGamesByYear(2025);
     })
     .catch(error => console.error('Error adding game record:', error));
 }
 
 // Function to get game records
-function getGameRecords() {
-    fetch('/getGameRecords')
+function getGameRecords(year) {
+    fetch(`/getGameRecords?year=${year}`)
     .then(response => {
         console.log("Response for getGameRecords from Firebase:", response);
         return response.json();
@@ -63,8 +62,8 @@ function getGameRecords() {
 }
 
 // Function to get game summary
-function getGameSummary() {
-    fetch('/getSummary')
+function getGameSummary(year) {
+    fetch(`/getSummary?year=${year}`)
     .then(response => {
         console.log("Response for getSummary from Firebase:", response);
         return response.json();
@@ -230,6 +229,11 @@ function generateLeaderboard(playerSummaries) {
     return leaderboardHTML;
 }
 
+function filterGamesByYear(year) {
+    const yearParam = year >= 2025 ? year : '';
+    getGameRecords(yearParam);
+    getGameSummary(yearParam);
+}
 
 function updatePlayerOptions() {
     const player1Select = document.getElementById('player1');
@@ -237,7 +241,7 @@ function updatePlayerOptions() {
     const player1Value = player1Select.value;
     const player2Value = player2Select.value;
 
-    const allOptions = ['Akash', 'Anurag', 'Bumbu', 'Karan', 'Manu', 'Rishabh', 'Sabari'];
+    const allOptions = ['Akash', 'Aditya', 'Anurag', 'Bumbu', 'Karan', 'Htike', 'Manu', 'Rishabh', 'Sabari'];
 
     player1Select.innerHTML = '<option value="">Select Player 1</option>';
     player2Select.innerHTML = '<option value="">Select Player 2</option>';
@@ -258,6 +262,9 @@ function updatePlayerOptions() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);
+
+    document.getElementById('year2025').addEventListener('click', () => filterGamesByYear(2025));
+    document.getElementById('year2024').addEventListener('click', () => filterGamesByYear(2024));
 
 // Function to handle form submission
     document.getElementById("gameForm").addEventListener("submit", (e) => {
@@ -287,8 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize fetch functions
-    getGameRecords();
-
-    getGameSummary();
+    filterGamesByYear(2025);
 });
 

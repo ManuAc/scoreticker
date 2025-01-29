@@ -165,3 +165,28 @@ th {
     width: 100%;
     height: 100%;
 }
+
+.year-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.year-buttons button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.year-buttons button:hover {
+    background-color: #45a049;
+}
+
+/* Ensure the year buttons are inline with the table container and summary container */
+.table-container .year-buttons {
+    margin-bottom: 10px;
+}
