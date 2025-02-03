@@ -348,21 +348,22 @@ function filterGamesByYear(year) {
     getGameSummary(yearParam);
 }
 
-// Add this function before the DOMContentLoaded event listener
+// Update the updatePlayerOptions function
 function updatePlayerOptions() {
     const player1Select = document.getElementById('player1');
     const player2Select = document.getElementById('player2');
     const player1Value = player1Select.value;
     const player2Value = player2Select.value;
 
-    // List of all players
+    // Save to localStorage when values change
+    if (player1Value) localStorage.setItem('lastPlayer1', player1Value);
+    if (player2Value) localStorage.setItem('lastPlayer2', player2Value);
+
     const allOptions = ['Akash', 'Aditya', 'Anurag', 'Bumbu', 'Karan', 'Htike', 'Manu', 'Rishabh', 'Sabari'];
 
-    // Reset select elements
     player1Select.innerHTML = '<option value="">Select Player 1</option>';
     player2Select.innerHTML = '<option value="">Select Player 2</option>';
 
-    // Populate options excluding the selected player in the other dropdown
     allOptions.forEach(player => {
         if (player !== player2Value) {
             player1Select.innerHTML += `<option value="${player}">${player}</option>`;
@@ -372,7 +373,6 @@ function updatePlayerOptions() {
         }
     });
 
-    // Restore selected values
     player1Select.value = player1Value;
     player2Select.value = player2Value;
 }
@@ -470,9 +470,9 @@ function generateLeaderboard(playerSummaries) {
     return leaderboardHTML;
 }
 
-// Update form submission in DOMContentLoaded to match ticker.js
+// Update the DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired'); // Debug log
+    console.log('DOMContentLoaded event fired');
     
     // Set default date to today
     const today = new Date().toISOString().split('T')[0];
@@ -481,6 +481,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set default scores to 21
     document.getElementById('score1').value = "21";
     document.getElementById('score2').value = "21";
+    
+    // Get last selected players from localStorage
+    const lastPlayer1 = localStorage.getItem('lastPlayer1');
+    const lastPlayer2 = localStorage.getItem('lastPlayer2');
+    
+    if (lastPlayer1) document.getElementById('player1').value = lastPlayer1;
+    if (lastPlayer2) document.getElementById('player2').value = lastPlayer2;
     
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);

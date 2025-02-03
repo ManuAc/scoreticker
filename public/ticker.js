@@ -252,6 +252,10 @@ function updatePlayerOptions() {
     const player1Value = player1Select.value;
     const player2Value = player2Select.value;
 
+    // Save to localStorage when values change
+    if (player1Value) localStorage.setItem('lastPlayer1', player1Value);
+    if (player2Value) localStorage.setItem('lastPlayer2', player2Value);
+
     const allOptions = ['Akash', 'Aditya', 'Anurag', 'Bumbu', 'Karan', 'Htike', 'Manu', 'Rishabh', 'Sabari'];
 
     player1Select.innerHTML = '<option value="">Select Player 1</option>';
@@ -278,6 +282,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set default scores to 21
     document.getElementById('score1').value = "21";
     document.getElementById('score2').value = "21";
+    
+    // Get last selected players from localStorage
+    const lastPlayer1 = localStorage.getItem('lastPlayer1');
+    const lastPlayer2 = localStorage.getItem('lastPlayer2');
+    
+    if (lastPlayer1) document.getElementById('player1').value = lastPlayer1;
+    if (lastPlayer2) document.getElementById('player2').value = lastPlayer2;
     
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);
