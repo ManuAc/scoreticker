@@ -63,21 +63,21 @@ function getGameRecords(year) {
 
 // Function to get game summary
 function getGameSummary(year) {
-    fetch(`/getSummary?year=${year}`)
-    .then(response => {
-        console.log("Response for getSummary from Firebase:", response);
-        return response.json();
-    })
-    .then(data => {
-        const summaryData = {};
-        data.forEach(record => {
-            if (!summaryData[record.player]) {
-                summaryData[record.player] = {
+    // First get all games for last 10 calculation
+    Promise.all([
+        fetch(`/getSummary?year=${year}`).then(response => response.json()),
+        fetch(`/getGameRecords?year=`).then(response => response.json())
+    ])
+    .then(([summaryData, allGames]) => {
+        const processedSummaryData = {};
+        summaryData.forEach(record => {
+            if (!processedSummaryData[record.player]) {
+                processedSummaryData[record.player] = {
                     player: record.player,
                     opponents: []
                 };
             }
-            summaryData[record.player].opponents.push({
+            processedSummaryData[record.player].opponents.push({
                 name: record.opponent,
                 gamesPlayed: record.gamesPlayed,
                 wins: record.wins,
@@ -89,15 +89,15 @@ function getGameSummary(year) {
         summaryGrid.innerHTML = "";
 
         // Leaderboard section
-        const leaderboardHTML = generateLeaderboard(summaryData)
+        const leaderboardHTML = generateLeaderboard(processedSummaryData, allGames);
         const leaderboardHTMLDiv = document.createElement("div");
         leaderboardHTMLDiv.classList.add("player-summary");
-        leaderboardHTMLDiv.innerHTML = leaderboardHTML
+        leaderboardHTMLDiv.innerHTML = leaderboardHTML;
 
         summaryGrid.appendChild(leaderboardHTMLDiv);
 
         // Player summary section
-        Object.values(summaryData).forEach(playerSummary => {
+        Object.values(processedSummaryData).forEach(playerSummary => {
             const playerSummaryDiv = document.createElement("div");
             playerSummaryDiv.classList.add("player-summary");
             playerSummaryDiv.innerHTML = `
@@ -137,6 +137,76 @@ function getGameSummary(year) {
     .catch(error => console.error('Error getting game summary:', error));
 }
 
+// Add this new function to calculate last 10 games performance
+function getLastTenGamesPerformance(player, allGames) {
+    // Get all games for this player (either as player1 or player2)
+    const playerGames = allGames
+        .filter(game => game.player1 === player || game.player2 === player)
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+        .slice(0, 10); // Get last 10 games
+
+    // Count wins in these games
+    const wins = playerGames.filter(game => game.winner === player).length;
+    return `${wins}/${playerGames.length}`; // Format as "wins/games"
+}
+
+// Update the generateLeaderboard function
+function generateLeaderboard(playerSummaries, allGames) {
+    let overallData = [];
+
+    Object.values(playerSummaries).forEach(playerSummary => {
+        overallData.push({
+            player: playerSummary.player,
+            ...aggregateOverallData(playerSummary.opponents),
+            lastTen: getLastTenGamesPerformance(playerSummary.player, allGames)
+        });
+    });
+
+    // Sort by winPercentage desc
+    overallData.sort((a, b) => b.winPercentage - a.winPercentage);
+
+    let leaderboardHTML = `
+        <h2>Leaderboard</h2>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Total Games</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Win Percentage</th>
+                    <th>Last 10</th>
+                    <th>Winning Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    overallData.forEach(playerData => {
+        leaderboardHTML += `
+            <tr>
+                <td>${playerData.player}</td>
+                <td>${playerData.totalGames}</td>
+                <td>${playerData.totalWins}</td>
+                <td>${playerData.totalLosses}</td>
+                <td>${playerData.winPercentage}%</td>
+                <td>${playerData.lastTen}</td>
+                <td>
+                    <div class="bar" style="--win-percentage: ${playerData.winPercentage}%;">
+                        <div class="bar-fill"></div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    leaderboardHTML += `
+            </tbody>
+        </table>
+    `;
+
+    return leaderboardHTML;
+}
 
 // Assuming playerSummaries is an array containing player summary objects with per-opponent data
 // Function to aggregate per-opponent data to calculate overall statistics
@@ -168,65 +238,6 @@ function aggregateOverallData(playerSummaries) {
         totalLosses,
         winPercentage
     };
-}
-
-// Function to generate leaderboard HTML
-function generateLeaderboard(playerSummaries) {
-    // Aggregate overall data for each player
-    let overallData = []
-
-     Object.values(playerSummaries).forEach(playerSummary => {
-        overallData.push({
-            player: playerSummary.player,
-            ...aggregateOverallData(playerSummary.opponents)
-        })
-    });
-
-    // Sort it by winPercentage desc
-    overallData.sort((a, b) => b.winPercentage - a.winPercentage);
-    // Create the leaderboard HTML string
-    let leaderboardHTML = `
-        <h2>Leaderboard</h2>
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Total Games</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Win Percentage</th>
-                    <th>Winning Trend</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    // Iterate over each player's overall data to populate the leaderboard rows
-    overallData.forEach(playerData => {
-        leaderboardHTML += `
-            <tr>
-                <td>${playerData.player}</td>
-                <td>${playerData.totalGames}</td>
-                <td>${playerData.totalWins}</td>
-                <td>${playerData.totalLosses}</td>
-                <td>${playerData.winPercentage}%</td>
-                <td>
-                    <div class="bar" style="--win-percentage: ${playerData.winPercentage}%;">
-                        <div class="bar-fill"></div>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-
-    // Close the HTML table
-    leaderboardHTML += `
-            </tbody>
-        </table>
-    `;
-
-    // Return the generated leaderboard HTML
-    return leaderboardHTML;
 }
 
 function filterGamesByYear(year) {

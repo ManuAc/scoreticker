@@ -368,17 +368,32 @@ function aggregateOverallData(playerSummaries) {
     };
 }
 
-// Function to generate leaderboard HTML
+// Add this new function to calculate last 10 games performance
+function getLastTenGamesPerformance(player) {
+    // Get all games for this player (either as player1 or player2)
+    const playerGames = mockGameRecords
+        .filter(game => game.player1 === player || game.player2 === player)
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+        .slice(0, 10); // Get last 10 games
+
+    // Count wins in these games
+    const wins = playerGames.filter(game => game.winner === player).length;
+    return `${wins}/${playerGames.length}`; // Format as "wins/games"
+}
+
+// Update the generateLeaderboard function
 function generateLeaderboard(playerSummaries) {
     let overallData = [];
 
     Object.values(playerSummaries).forEach(playerSummary => {
         overallData.push({
             player: playerSummary.player,
-            ...aggregateOverallData(playerSummary.opponents)
+            ...aggregateOverallData(playerSummary.opponents),
+            lastTen: getLastTenGamesPerformance(playerSummary.player)
         });
     });
 
+    // Sort by winPercentage desc
     overallData.sort((a, b) => b.winPercentage - a.winPercentage);
 
     let leaderboardHTML = `
@@ -391,6 +406,7 @@ function generateLeaderboard(playerSummaries) {
                     <th>Wins</th>
                     <th>Losses</th>
                     <th>Win Percentage</th>
+                    <th>Last 10</th>
                     <th>Winning Trend</th>
                 </tr>
             </thead>
@@ -405,6 +421,7 @@ function generateLeaderboard(playerSummaries) {
                 <td>${playerData.totalWins}</td>
                 <td>${playerData.totalLosses}</td>
                 <td>${playerData.winPercentage}%</td>
+                <td>${playerData.lastTen}</td>
                 <td>
                     <div class="bar" style="--win-percentage: ${playerData.winPercentage}%;">
                         <div class="bar-fill"></div>
