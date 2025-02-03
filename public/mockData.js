@@ -478,6 +478,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').value = today;
     
+    // Set default scores to 21
+    document.getElementById('score1').value = "21";
+    document.getElementById('score2').value = "21";
+    
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);
 
