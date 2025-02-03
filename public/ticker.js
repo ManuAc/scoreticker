@@ -271,6 +271,10 @@ function updatePlayerOptions() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+    
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);
 
