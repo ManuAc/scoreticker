@@ -244,6 +244,10 @@ function filterGamesByYear(year) {
     const yearParam = year >= 2025 ? year : '';
     getGameRecords(yearParam);
     getGameSummary(yearParam);
+
+    // Update active state of year buttons
+    document.getElementById('year2025').classList.toggle('active', year === 2025);
+    document.getElementById('year2024').classList.toggle('active', year === 2024);
 }
 
 function updatePlayerOptions() {
