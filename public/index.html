@@ -15,7 +15,12 @@
                 <i class="fas fa-shuttlecock"></i>
                 <span>Jump Droppers</span>
             </div>
-            <div class="nav-year-buttons">
+            <!-- Add mobile year selector and hide buttons on mobile -->
+            <select id="yearSelect" class="year-select mobile-only">
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <div class="nav-year-buttons desktop-only">
                 <button id="year2025" class="year-btn">2025</button>
                 <button id="year2024" class="year-btn">2024</button>
             </div>
@@ -105,7 +110,6 @@
                                 <th>Player 2</th>
                                 <th>Score P1</th>
                                 <th>Score P2</th>
-                                <th>Winner</th>
                             </tr>
                         </thead>
                         <tbody>

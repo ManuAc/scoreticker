@@ -38,24 +38,18 @@ function getGameRecords(year) {
             const player2Cell = row.insertCell();
             const score1Cell = row.insertCell();
             const score2Cell = row.insertCell();
-            const winnerCell = row.insertCell();
 
             dateCell.innerText = record.date;
             player1Cell.innerText = record.player1;
             player2Cell.innerText = record.player2;
             score1Cell.innerText = record.score.player1;
             score2Cell.innerText = record.score.player2;
-            winnerCell.innerText = record.winner;
 
-            if (record.winner === record.player1) {
-                player1Cell.classList.add('winner');
-                player2Cell.classList.add('loser');
-                winnerCell.classList.add('winner');
-            } else {
-                player1Cell.classList.add('loser');
-                player2Cell.classList.add('winner');
-                winnerCell.classList.add('winner');
-            }
+            dateCell.setAttribute('data-label', 'Date');
+            player1Cell.setAttribute('data-label', 'Player 1');
+            player2Cell.setAttribute('data-label', 'Player 2');
+            score1Cell.setAttribute('data-label', 'Score P1');
+            score2Cell.setAttribute('data-label', 'Score P2');
         });
     })
     .catch(error => console.error('Error getting game records:', error));
@@ -171,12 +165,11 @@ function generateLeaderboard(playerSummaries, allGames) {
             <thead>
                 <tr>
                     <th>Player</th>
-                    <th>Total Games</th>
+                    <th>Games</th>
                     <th>Wins</th>
                     <th>Losses</th>
-                    <th>Win Percentage</th>
+                    <th>Win %</th>
                     <th>Last 10</th>
-                    <th>Winning Trend</th>
                 </tr>
             </thead>
             <tbody>
@@ -185,17 +178,12 @@ function generateLeaderboard(playerSummaries, allGames) {
     overallData.forEach(playerData => {
         leaderboardHTML += `
             <tr>
-                <td>${playerData.player}</td>
-                <td>${playerData.totalGames}</td>
-                <td>${playerData.totalWins}</td>
-                <td>${playerData.totalLosses}</td>
-                <td>${playerData.winPercentage}%</td>
-                <td>${playerData.lastTen}</td>
-                <td>
-                    <div class="bar" style="--win-percentage: ${playerData.winPercentage}%;">
-                        <div class="bar-fill"></div>
-                    </div>
-                </td>
+                <td data-label="Player">${playerData.player}</td>
+                <td data-label="Games">${playerData.totalGames}</td>
+                <td data-label="Wins">${playerData.totalWins}</td>
+                <td data-label="Losses">${playerData.totalLosses}</td>
+                <td data-label="Win %">${playerData.winPercentage}%</td>
+                <td data-label="Last 10">${playerData.lastTen}</td>
             </tr>
         `;
     });
@@ -329,5 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize fetch functions
     filterGamesByYear(2025);
+
+    // Add year select handler
+    document.getElementById('yearSelect').addEventListener('change', (e) => {
+        filterGamesByYear(parseInt(e.target.value));
+    });
+
+    // Set initial year in dropdown
+    document.getElementById('yearSelect').value = "2025";
 });
 
