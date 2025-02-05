@@ -82,29 +82,42 @@ function getGameSummary(year) {
         const summaryGrid = document.getElementById("summaryGrid");
         summaryGrid.innerHTML = "";
 
-        // Leaderboard section
+        // Add the leaderboard
         const leaderboardHTML = generateLeaderboard(processedSummaryData, allGames);
         const leaderboardHTMLDiv = document.createElement("div");
         leaderboardHTMLDiv.classList.add("player-summary");
         leaderboardHTMLDiv.innerHTML = leaderboardHTML;
-
         summaryGrid.appendChild(leaderboardHTMLDiv);
 
-        // Player summary section
-        Object.values(processedSummaryData).forEach(playerSummary => {
-            const playerSummaryDiv = document.createElement("div");
-            playerSummaryDiv.classList.add("player-summary");
-            playerSummaryDiv.innerHTML = `
-                <h3>${playerSummary.player}</h3><br/>
+        // Add the player tabs
+        const playerTabs = document.getElementById("playerTabs");
+        const tabsContainer = document.createElement("div");
+        tabsContainer.classList.add("player-tabs-container");
+        
+        // Create tabs header
+        const tabsHeader = document.createElement("div");
+        tabsHeader.classList.add("tabs-header");
+        tabsHeader.innerHTML = Object.values(processedSummaryData).map((playerSummary, index) => `
+            <button class="tab-button ${index === 0 ? 'active' : ''}" 
+                    data-player="${playerSummary.player}">
+                ${playerSummary.player}
+            </button>
+        `).join('');
+
+        // Create tabs content
+        const tabsContent = document.createElement("div");
+        tabsContent.classList.add("tabs-content");
+        tabsContent.innerHTML = Object.values(processedSummaryData).map((playerSummary, index) => `
+            <div class="tab-content ${index === 0 ? 'active' : ''}" 
+                 id="tab-${playerSummary.player}">
                 <table class="summary-table">
                     <thead>
                         <tr>
                             <th>Opponent</th>
-                            <th>Games Played</th>
+                            <th>Games</th>
                             <th>Wins</th>
                             <th>Losses</th>
                             <th>Win %</th>
-                            <th>Winning Trend</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,17 +128,29 @@ function getGameSummary(year) {
                                 <td>${opponent.wins}</td>
                                 <td>${opponent.losses}</td>
                                 <td>${(opponent.wins / opponent.gamesPlayed * 100).toFixed(2)}%</td>
-                                <td>
-                                    <div class="bar" style="--win-percentage: ${(opponent.wins / opponent.gamesPlayed * 100)}%;">
-                                        <div class="bar-fill"></div>
-                                    </div>
-                                </td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
-            `;
-            summaryGrid.appendChild(playerSummaryDiv);
+            </div>
+        `).join('');
+
+        tabsContainer.appendChild(tabsHeader);
+        tabsContainer.appendChild(tabsContent);
+        playerTabs.innerHTML = ''; // Clear existing content
+        playerTabs.appendChild(tabsContainer);
+
+        // Add click handlers for tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => 
+                    btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => 
+                    content.classList.remove('active'));
+                
+                button.classList.add('active');
+                document.getElementById(`tab-${button.dataset.player}`).classList.add('active');
+            });
         });
     })
     .catch(error => console.error('Error getting game summary:', error));
@@ -160,7 +185,7 @@ function generateLeaderboard(playerSummaries, allGames) {
     overallData.sort((a, b) => b.winPercentage - a.winPercentage);
 
     let leaderboardHTML = `
-        <h2>Leaderboard</h2>
+        <h2><i class="fas fa-crown"></i> Power Rankings</h2>
         <table class="summary-table">
             <thead>
                 <tr>
