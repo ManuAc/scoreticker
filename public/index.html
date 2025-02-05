@@ -5,78 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jump Droppers</title>
     <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="top-row">
-            <div class="form-container">
-                <h2>Add Game Record</h2>
-                <form id="gameForm">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" required>
-                    <label for="player1">Player 1:</label>
-                    <select id="player1" name="player1" required>
-                        <option value="">Select Player 1</option>
-                        <option value="Akash">Akash</option>
-                        <option value="Aditya">Aditya</option>
-                        <option value="Anurag">Anurag</option>
-                        <option value="Bumbu">Bumbu</option>
-                        <option value="Karan">Karan</option>
-                        <option value="Htike">Htike</option>
-                        <option value="Manu">Manu</option>
-                        <option value="Rishabh">Rishabh</option>
-                        <option value="Sabari">Sabari</option>
-                    </select>
-                    <label for="player2">Player 2:</label>
-                    <select id="player2" name="player2" required>
-                        <option value="">Select Player 2</option>
-                        <option value="Akash">Akash</option>
-                        <option value="Aditya">Aditya</option>
-                        <option value="Anurag">Anurag</option>
-                        <option value="Bumbu">Bumbu</option>
-                        <option value="Karan">Karan</option>
-                        <option value="Htike">Htike</option>
-                        <option value="Manu">Manu</option>
-                        <option value="Rishabh">Rishabh</option>
-                        <option value="Sabari">Sabari</option>
-                    </select>
-                    <label for="score1">Score Player 1:</label>
-                    <input type="number" id="score1" name="score1" required>
-                    <label for="score2">Score Player 2:</label>
-                    <input type="number" id="score2" name="score2" required>
-                    <button type="submit">Add Record</button>
-                </form>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fas fa-shuttlecock"></i>
+                <span>Jump Droppers</span>
             </div>
-            <div class="table-container">
-                <h2>Game Records</h2>
-                <div class="year-buttons">
-                    <button id="year2025">2025</button>
-                    <button id="year2024">2024</button>
-                </div>
-                <table id="gameTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Player 1</th>
-                            <th>Player 2</th>
-                            <th>Score Player 1</th>
-                            <th>Score Player 2</th>
-                            <th>Winner</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div class="nav-year-buttons">
+                <button id="year2025" class="year-btn">2025</button>
+                <button id="year2024" class="year-btn">2024</button>
             </div>
         </div>
-        <div class="bottom-row">
-            <div class="summary-container">
+    </nav>
+
+    <div class="container">
+        <div class="top-row">
+            <div class="form-container card">
+                <h2><i class="fas fa-plus-circle"></i> Add Game Record</h2>
+                <form id="gameForm">
+                    <div class="form-group">
+                        <label for="date"><i class="far fa-calendar"></i> Date:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="players-container">
+                        <div class="player-column">
+                            <div class="form-group">
+                                <label for="player1"><i class="fas fa-user"></i> Player 1:</label>
+                                <select id="player1" name="player1" required>
+                                    <option value="">Select Player 1</option>
+                                    <option value="Akash">Akash</option>
+                                    <option value="Aditya">Aditya</option>
+                                    <option value="Anurag">Anurag</option>
+                                    <option value="Bumbu">Bumbu</option>
+                                    <option value="Karan">Karan</option>
+                                    <option value="Htike">Htike</option>
+                                    <option value="Manu">Manu</option>
+                                    <option value="Rishabh">Rishabh</option>
+                                    <option value="Sabari">Sabari</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="score1"><i class="fas fa-trophy"></i> Score:</label>
+                                <input type="number" id="score1" name="score1" required min="0" max="30">
+                            </div>
+                        </div>
+
+                        <div class="vs-badge">VS</div>
+
+                        <div class="player-column">
+                            <div class="form-group">
+                                <label for="player2"><i class="fas fa-user"></i> Player 2:</label>
+                                <select id="player2" name="player2" required>
+                                    <option value="">Select Player 2</option>
+                                    <option value="Akash">Akash</option>
+                                    <option value="Aditya">Akash</option>
+                                    <option value="Anurag">Anurag</option>
+                                    <option value="Bumbu">Bumbu</option>
+                                    <option value="Karan">Karan</option>
+                                    <option value="Htike">Htike</option>
+                                    <option value="Manu">Manu</option>
+                                    <option value="Rishabh">Rishabh</option>
+                                    <option value="Sabari">Sabari</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="score2"><i class="fas fa-trophy"></i> Score:</label>
+                                <input type="number" id="score2" name="score2" required min="0" max="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus"></i> Add Record
+                    </button>
+                </form>
+            </div>
+
+            <div class="summary-container card">
                 <div id="summaryGrid" class="summary-grid">
-                    <!-- Summary will be populated here -->
+                    <!-- Power Rankings will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="middle-row">
+            <div class="table-container card">
+                <h2><i class="fas fa-table"></i> Game Records</h2>
+                <div class="table-wrapper">
+                    <table id="gameTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Player 1</th>
+                                <th>Player 2</th>
+                                <th>Score P1</th>
+                                <th>Score P2</th>
+                                <th>Winner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add back the bottom row for player tabs -->
+        <div class="bottom-row">
+            <div class="card">
+                <h2><i class="fas fa-user-stats"></i> Individual Stats</h2>
+                <div id="playerTabs">
+                    <!-- Player tabs will be populated here -->
                 </div>
             </div>
         </div>
     </div>
     <script src="bundle.js"></script>
+    <!-- Uncomment this to test UI changes and use mockService -->
+    <!-- <script src="mockData.js"></script> -->
 </body>
 </html>
