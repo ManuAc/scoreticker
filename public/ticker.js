@@ -45,6 +45,15 @@ function getGameRecords(year) {
             score1Cell.innerText = record.score.player1;
             score2Cell.innerText = record.score.player2;
 
+            // Add winner/loser styling
+            if (record.score.player1 > record.score.player2) {
+                player1Cell.classList.add('winner');
+                player2Cell.classList.add('loser');
+            } else {
+                player1Cell.classList.add('loser');
+                player2Cell.classList.add('winner');
+            }
+
             dateCell.setAttribute('data-label', 'Date');
             player1Cell.setAttribute('data-label', 'Player 1');
             player2Cell.setAttribute('data-label', 'Player 2');
