@@ -32,15 +32,18 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2rem;
+    padding: 0 1rem;
 }
 
 .logo {
@@ -200,6 +203,37 @@ input:focus, select:focus {
     border-radius: var(--border-radius);
     overflow: hidden;
     border: 1px solid rgba(52, 152, 219, 0.1);
+    max-height: 440px;
+    overflow-y: auto;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(52, 152, 219, 0.3);
+    border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(52, 152, 219, 0.5);
+}
+
+#gameTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to right,
+        rgba(52, 152, 219, 0.9),
+        rgba(52, 152, 219, 0.8)
+    );
 }
 
 table {
@@ -244,9 +278,10 @@ th {
 }
 
 .player-summary {
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    padding: 1.25rem;
+    padding: 0.5rem;
+    margin: 0;
+    background: none;
+    box-shadow: none;
 }
 
 .summary-table {
@@ -284,17 +319,214 @@ tbody tr:hover {
 }
 
 @media (max-width: 768px) {
-    .top-row {
-        grid-template-columns: 1fr;
+    .navbar {
+        padding: 0.75rem 0;
+        width: 100vw;
+        margin: 0;
+        left: 0;
+        right: 0;
     }
 
-    .players-container {
-        grid-template-columns: 1fr;
+    .nav-content {
+        padding: 0 0.75rem;
+        width: 100%;
     }
 
+    /* Container spacing */
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin: 0.75rem auto;
+    }
+
+    /* Card spacing and styling */
+    .card {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.75rem;
+        margin: 0;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.97);
+    }
+
+    /* Make Add Game Record card slightly darker */
+    .form-container.card {
+        background-color: rgba(255, 255, 255, 0.94);
+    }
+
+    .top-row,
+    .middle-row,
+    .bottom-row {
+        margin: 0;
+        width: 100%;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    .year-select {
+        padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Form adjustments */
+    .form-group {
+        margin-bottom: 0.25rem;
+    }
+
+    input, select {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Table adjustments */
+    .table-wrapper {
+        margin: 0;
+        padding: 0;
+        border-radius: 8px;
+    }
+
+    #gameTable td,
+    .summary-table td {
+        padding: 0.25rem;
+        font-size: 0.85rem;
+    }
+
+    #gameTable td::before,
+    .summary-table td::before {
+        min-width: 60px;
+        font-size: 0.85rem;
+    }
+
+    /* VS badge */
     .vs-badge {
-        text-align: center;
-        margin: 1rem 0;
+        margin: 0.25rem 0;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Headers */
+    h2 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        padding: 0;
+    }
+
+    /* Tab adjustments */
+    .tabs-header {
+        padding: 0.25rem;
+        gap: 0.15rem;
+    }
+
+    .tab-button {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .tabs-content {
+        padding: 0.5rem 0.25rem;
+    }
+
+    /* Grid adjustments */
+    #gameTable tbody tr,
+    .summary-table tbody tr {
+        gap: 0.25rem;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .top-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Reorder cards */
+    .form-container {
+        order: 1;
+    }
+
+    .summary-container {
+        order: 2;
+    }
+
+    /* Adjust spacing */
+    .form-container,
+    .summary-container {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+
+    .summary-container {
+        padding: 0.5rem;
+    }
+
+    .player-summary {
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Adjust table styles */
+    .summary-table {
+        width: 100%;
+        font-size: 0.85rem;
+    }
+
+    .summary-table th,
+    .summary-table td {
+        padding: 0.35rem 0.25rem;
+    }
+
+    /* Make sure the table doesn't overflow */
+    .table-wrapper {
+        margin: 0;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Adjust header */
+    .player-summary h2 {
+        font-size: 1rem;
+        margin: 0 0 0.5rem 0;
+        padding: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+
+    .nav-content {
+        padding: 0 0.5rem;
+    }
+
+    .container {
+        padding: 0.35rem;
+        gap: 0.5rem;
+        margin: 0.5rem auto;
+    }
+
+    .top-row,
+    .middle-row,
+    .bottom-row {
+        gap: 0.5rem;
+    }
+
+    .card {
+        padding: 0.5rem;
+    }
+
+    input, select, button {
+        font-size: 0.8rem;
+    }
+
+    td, th {
+        font-size: 0.8rem;
     }
 }
 
@@ -389,5 +621,49 @@ tbody tr:hover {
         text-align: center;
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+    }
+}
+
+/* Add these classes */
+.mobile-only {
+    display: none;
+}
+
+.year-select {
+    background-color: transparent;
+    border: 2px solid var(--secondary-color);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    padding-right: 1.5rem;
+    min-width: 80px;
+}
+
+.year-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    .year-select {
+        font-size: 0.85rem;
+        padding: 0.35rem 1.5rem 0.35rem 0.5rem;
     }
 }

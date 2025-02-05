@@ -137,37 +137,41 @@ const summaryGrid = document.getElementById('summaryGrid');
 
 // Function to get game records
 function getGameRecords(year) {
-    mockService.getGameRecords(year)
-        .then(data => {
-            console.log('Game Records:', data);
-            gameTable.innerHTML = '';
-            data.forEach(record => {
-                const row = gameTable.insertRow();
-                const dateCell = row.insertCell();
-                const player1Cell = row.insertCell();
-                const player2Cell = row.insertCell();
-                const score1Cell = row.insertCell();
-                const score2Cell = row.insertCell();
-                const winnerCell = row.insertCell();
+    // Filter records by year if provided
+    const records = year ? mockGameRecords.filter(record => record.date.startsWith(year)) : mockGameRecords;
+    
+    const gameTableBody = document.getElementById('gameTable').getElementsByTagName('tbody')[0];
+    gameTableBody.innerHTML = '';
+    
+    records.forEach(record => {
+        const row = gameTableBody.insertRow();
 
-                dateCell.innerText = record.date;
-                player1Cell.innerText = record.player1;
-                player2Cell.innerText = record.player2;
-                score1Cell.innerText = record.score.player1;
-                score2Cell.innerText = record.score.player2;
-                winnerCell.innerText = record.winner;
+        const dateCell = row.insertCell();
+        const player1Cell = row.insertCell();
+        const player2Cell = row.insertCell();
+        const score1Cell = row.insertCell();
+        const score2Cell = row.insertCell();
 
-                if (record.winner === record.player1) {
-                    player1Cell.classList.add('winner');
-                    player2Cell.classList.add('loser');
-                } else {
-                    player1Cell.classList.add('loser');
-                    player2Cell.classList.add('winner');
-                }
-                winnerCell.classList.add('winner');
-            });
-        })
-        .catch(error => console.error('Error getting game records:', error));
+        dateCell.innerText = record.date;
+        player1Cell.innerText = record.player1;
+        player2Cell.innerText = record.player2;
+        score1Cell.innerText = record.score.player1;
+        score2Cell.innerText = record.score.player2;
+
+        if (record.winner === record.player1) {
+            player1Cell.classList.add('winner');
+            player2Cell.classList.add('loser');
+        } else {
+            player1Cell.classList.add('loser');
+            player2Cell.classList.add('winner');
+        }
+
+        dateCell.setAttribute('data-label', 'Date');
+        player1Cell.setAttribute('data-label', 'Player 1');
+        player2Cell.setAttribute('data-label', 'Player 2');
+        score1Cell.setAttribute('data-label', 'Score P1');
+        score2Cell.setAttribute('data-label', 'Score P2');
+    });
 }
 
 // Function to get player stats
@@ -296,7 +300,6 @@ function getGameSummary(year) {
                             <th>Wins</th>
                             <th>Losses</th>
                             <th>Win %</th>
-                            <th>Winning Trend</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -307,11 +310,6 @@ function getGameSummary(year) {
                                 <td>${opponent.wins}</td>
                                 <td>${opponent.losses}</td>
                                 <td>${(opponent.wins / opponent.gamesPlayed * 100).toFixed(2)}%</td>
-                                <td>
-                                    <div class="bar" style="--win-percentage: ${(opponent.wins / opponent.gamesPlayed * 100)}%;">
-                                        <div class="bar-fill"></div>
-                                    </div>
-                                </td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -432,17 +430,16 @@ function generateLeaderboard(playerSummaries) {
     overallData.sort((a, b) => b.winPercentage - a.winPercentage);
 
     let leaderboardHTML = `
-        <h2><i class="fas fa-crown"></i> Power Rankings</h2>
+        <h2>Power Rankings</h2>
         <table class="summary-table">
             <thead>
                 <tr>
                     <th>Player</th>
-                    <th>Total Games</th>
+                    <th>Games</th>
                     <th>Wins</th>
                     <th>Losses</th>
-                    <th>Win Percentage</th>
+                    <th>Win %</th>
                     <th>Last 10</th>
-                    <th>Winning Trend</th>
                 </tr>
             </thead>
             <tbody>
@@ -451,17 +448,12 @@ function generateLeaderboard(playerSummaries) {
     overallData.forEach(playerData => {
         leaderboardHTML += `
             <tr>
-                <td>${playerData.player}</td>
-                <td>${playerData.totalGames}</td>
-                <td>${playerData.totalWins}</td>
-                <td>${playerData.totalLosses}</td>
-                <td>${playerData.winPercentage}%</td>
-                <td>${playerData.lastTen}</td>
-                <td>
-                    <div class="bar" style="--win-percentage: ${playerData.winPercentage}%;">
-                        <div class="bar-fill"></div>
-                    </div>
-                </td>
+                <td data-label="Player">${playerData.player}</td>
+                <td data-label="Games">${playerData.totalGames}</td>
+                <td data-label="Wins">${playerData.totalWins}</td>
+                <td data-label="Losses">${playerData.totalLosses}</td>
+                <td data-label="Win %">${playerData.winPercentage}%</td>
+                <td data-label="Last 10">${playerData.lastTen}</td>
             </tr>
         `;
     });
@@ -624,7 +616,6 @@ function getGameSummary(year) {
                             <th>Wins</th>
                             <th>Losses</th>
                             <th>Win %</th>
-                            <th>Winning Trend</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -635,11 +626,6 @@ function getGameSummary(year) {
                                 <td>${opponent.wins}</td>
                                 <td>${opponent.losses}</td>
                                 <td>${(opponent.wins / opponent.gamesPlayed * 100).toFixed(2)}%</td>
-                                <td>
-                                    <div class="bar" style="--win-percentage: ${(opponent.wins / opponent.gamesPlayed * 100)}%;">
-                                        <div class="bar-fill"></div>
-                                    </div>
-                                </td>
                             </tr>
                         `).join('')}
                     </tbody>
