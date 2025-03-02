@@ -45,6 +45,15 @@ function getGameRecords(year) {
             score1Cell.innerText = record.score.player1;
             score2Cell.innerText = record.score.player2;
 
+            // Add winner/loser styling
+            if (record.score.player1 > record.score.player2) {
+                player1Cell.classList.add('winner');
+                player2Cell.classList.add('loser');
+            } else {
+                player1Cell.classList.add('loser');
+                player2Cell.classList.add('winner');
+            }
+
             dateCell.setAttribute('data-label', 'Date');
             player1Cell.setAttribute('data-label', 'Player 1');
             player2Cell.setAttribute('data-label', 'Player 2');
@@ -200,10 +209,17 @@ function generateLeaderboard(playerSummaries, allGames) {
             <tbody>
     `;
 
-    overallData.forEach(playerData => {
+    overallData.forEach((playerData, index) => {
+        const rankClass = index === 0 ? 'rank-gold' : 
+                         index === 1 ? 'rank-silver' : 
+                         index === 2 ? 'rank-bronze' : '';
+        const medalClass = index === 0 ? 'medal-gold' : 
+                          index === 1 ? 'medal-silver' : 
+                          index === 2 ? 'medal-bronze' : '';
+        
         leaderboardHTML += `
-            <tr>
-                <td data-label="Player">${playerData.player}</td>
+            <tr class="${rankClass}">
+                <td data-label="Player"><span class="${medalClass}">${playerData.player}</span></td>
                 <td data-label="Games">${playerData.totalGames}</td>
                 <td data-label="Wins">${playerData.totalWins}</td>
                 <td data-label="Losses">${playerData.totalLosses}</td>

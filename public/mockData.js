@@ -430,7 +430,7 @@ function generateLeaderboard(playerSummaries) {
     overallData.sort((a, b) => b.winPercentage - a.winPercentage);
 
     let leaderboardHTML = `
-        <h2>Power Rankings</h2>
+        <h2><i class="fas fa-crown"></i> Power Rankings</h2>
         <table class="summary-table">
             <thead>
                 <tr>
@@ -445,9 +445,13 @@ function generateLeaderboard(playerSummaries) {
             <tbody>
     `;
 
-    overallData.forEach(playerData => {
+    overallData.forEach((playerData, index) => {
+        const rankClass = index === 0 ? 'rank-gold' : 
+                         index === 1 ? 'rank-silver' : 
+                         index === 2 ? 'rank-bronze' : '';
+        
         leaderboardHTML += `
-            <tr>
+            <tr class="${rankClass}">
                 <td data-label="Player">${playerData.player}</td>
                 <td data-label="Games">${playerData.totalGames}</td>
                 <td data-label="Wins">${playerData.totalWins}</td>

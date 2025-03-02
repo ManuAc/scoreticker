@@ -667,3 +667,81 @@ tbody tr:hover {
         padding: 0.35rem 1.5rem 0.35rem 0.5rem;
     }
 }
+
+/* Medal themes for top 3 ranks */
+.rank-gold {
+    background: linear-gradient(to right, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1));
+    transition: background 0.3s ease;
+}
+
+.rank-gold:hover {
+    background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.15));
+}
+
+.rank-silver {
+    background: linear-gradient(to right, rgba(192, 192, 192, 0.25), rgba(192, 192, 192, 0.1));
+    transition: background 0.3s ease;
+}
+
+.rank-silver:hover {
+    background: linear-gradient(to right, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.15));
+}
+
+.rank-bronze {
+    background: linear-gradient(to right, rgba(205, 127, 50, 0.25), rgba(205, 127, 50, 0.1));
+    transition: background 0.3s ease;
+}
+
+.rank-bronze:hover {
+    background: linear-gradient(to right, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.15));
+}
+
+.medal-gold::before {
+    content: '\f559';  /* Medal icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #FFD700;
+    margin-right: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: inline-block;
+}
+
+.medal-silver::before {
+    content: '\f559';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #C0C0C0;
+    margin-right: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: inline-block;
+}
+
+.medal-bronze::before {
+    content: '\f559';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #CD7F32;
+    margin-right: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    .medal-gold::before,
+    .medal-silver::before,
+    .medal-bronze::before {
+        font-size: 0.9rem;
+        margin-right: 6px;
+    }
+}
+
+/* Add padding to the table container for medal icons */
+.player-summary {
+    padding-left: 25px !important;
+}
+
+@media (max-width: 768px) {
+    .player-summary {
+        padding-left: 20px !important;
+    }
+}
