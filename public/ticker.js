@@ -38,20 +38,24 @@ function getGameRecords(year) {
             const player2Cell = row.insertCell();
             const score1Cell = row.insertCell();
             const score2Cell = row.insertCell();
+            const winnerCell = row.insertCell();
 
             dateCell.innerText = record.date;
             player1Cell.innerText = record.player1;
             player2Cell.innerText = record.player2;
             score1Cell.innerText = record.score.player1;
             score2Cell.innerText = record.score.player2;
+            winnerCell.innerText = record.winner;
 
             // Add winner/loser styling
-            if (record.score.player1 > record.score.player2) {
+            if (record.winner === record.player1) {
                 player1Cell.classList.add('winner');
                 player2Cell.classList.add('loser');
+                winnerCell.classList.add('winner');
             } else {
                 player1Cell.classList.add('loser');
                 player2Cell.classList.add('winner');
+                winnerCell.classList.add('winner');
             }
 
             dateCell.setAttribute('data-label', 'Date');
@@ -59,6 +63,7 @@ function getGameRecords(year) {
             player2Cell.setAttribute('data-label', 'Player 2');
             score1Cell.setAttribute('data-label', 'Score P1');
             score2Cell.setAttribute('data-label', 'Score P2');
+            winnerCell.setAttribute('data-label', 'Winner');
         });
     })
     .catch(error => console.error('Error getting game records:', error));

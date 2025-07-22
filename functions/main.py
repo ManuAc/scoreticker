@@ -13,12 +13,24 @@ from datetime import datetime
 initialize_app()
 
 
+# Helper function to generate the games collection name
+def get_games_collection_name(year):
+    quarter = (year%4) + 1 if year else None
+    return f"games_{year}_{quarter}" if quarter else "games"
+
+
+# Helper function to generate the summary collection name
+def get_summary_collection_name(year):
+    quarter = (year%4) + 1 if year else None
+    return f"summary_{year}_{quarter}" if quarter else "summary"
+
+
 @https_fn.on_request(
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def add_game_record(request):
     year = datetime.now().year
-    collection_name = f"games_{year}"
+    collection_name = get_games_collection_name(year)
 
     try:
         # Update games collection
@@ -39,7 +51,7 @@ def add_game_record(request):
 
 
 def update_summary(player_name, opponent, winner, year):
-    collection_name = f"summary_{year}"
+    collection_name = get_summary_collection_name(year)
 
     summary_ref = firestore.client().collection(collection_name).where('player', '==', player_name).where('opponent', '==', opponent)
     docs = list(summary_ref.stream())
@@ -75,7 +87,7 @@ def update_summary(player_name, opponent, winner, year):
 )
 def get_game_records(request):
     year = request.args.get('year')
-    collection_name = f"games_{year}" if year else "games"
+    collection_name = get_games_collection_name(year)
 
     try:
         games_ref = firestore.client().collection(collection_name).order_by('date', direction=firestore.Query.DESCENDING).stream()
@@ -95,7 +107,7 @@ def get_game_records(request):
 )
 def get_game_summary(request):
     year = request.args.get('year')
-    collection_name = f"summary_{year}" if year else "summary"
+    collection_name = get_summary_collection_name(year)
 
     try:
         summary_ref = firestore.client().collection(collection_name).stream()
