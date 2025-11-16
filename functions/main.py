@@ -15,14 +15,32 @@ initialize_app()
 
 # Helper function to generate the games collection name
 def get_games_collection_name(year):
-    quarter = (year%4) + 1 if year else None
-    return f"games_{year}_{quarter}" if quarter else "games"
+
+    if year is None or int(year) <= 2024:
+        return "games"
+
+    month = datetime.now().month
+    quarter = (month - 1) // 3 + 1
+
+    if int(year) == 2025 and quarter <= 2:
+        return "games_2025"
+
+    return f"games_{year}_{quarter}"
 
 
 # Helper function to generate the summary collection name
 def get_summary_collection_name(year):
-    quarter = (year%4) + 1 if year else None
-    return f"summary_{year}_{quarter}" if quarter else "summary"
+
+    if year is None or int(year) <= 2024:
+        return "summary"
+
+    month = datetime.now().month
+    quarter = (month - 1) // 3 + 1
+
+    if int(year) == 2025 and quarter <= 2:
+        return "summary_2025"
+
+    return f"summary_{year}_{quarter}"
 
 
 @https_fn.on_request(

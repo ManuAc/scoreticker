@@ -74,7 +74,7 @@ function getGameSummary(year) {
     // First get all games for last 10 calculation
     Promise.all([
         fetch(`/getSummary?year=${year}`).then(response => response.json()),
-        fetch(`/getGameRecords?year=`).then(response => response.json())
+        fetch(`/getGameRecords?year=${year}`).then(response => response.json())
     ])
     .then(([summaryData, allGames]) => {
         const processedSummaryData = {};
@@ -362,7 +362,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize fetch functions
-    filterGamesByYear(2025);
+    const currentYear = new Date().getFullYear();
+    filterGamesByYear(currentYear);
 
     // Add year select handler
     document.getElementById('yearSelect').addEventListener('change', (e) => {
