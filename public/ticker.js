@@ -14,8 +14,9 @@ function addGameRecord(gameData) {
     .then(data => {
         console.log(data)
         
-        // Reload other sections
-        filterGamesByYear(2025);
+        // Reload other sections with the current tournament
+        const currentTournament = document.getElementById('tournament_id').value;
+        filterGamesByYear(currentTournament);
     })
     .catch(error => console.error('Error adding game record:', error));
 }
@@ -170,13 +171,13 @@ function getGameSummary(year) {
     .catch(error => console.error('Error getting game summary:', error));
 }
 
-// Add this new function to calculate last 10 games performance
-function getLastTenGamesPerformance(player, allGames) {
+// Add this new function to calculate last 5 games performance
+function getRecentTrend(player, allGames) {
     // Get all games for this player (either as player1 or player2)
     const playerGames = allGames
         .filter(game => game.player1 === player || game.player2 === player)
-        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
-        .slice(0, 10); // Get last 10 games
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5); // Keep only the top 5
 
     // Count wins in these games
     const wins = playerGames.filter(game => game.winner === player).length;
@@ -191,7 +192,7 @@ function generateLeaderboard(playerSummaries, allGames) {
         overallData.push({
             player: playerSummary.player,
             ...aggregateOverallData(playerSummary.opponents),
-            lastTen: getLastTenGamesPerformance(playerSummary.player, allGames)
+            trend: getRecentTrend(playerSummary.player, allGames)
         });
     });
 
@@ -208,7 +209,7 @@ function generateLeaderboard(playerSummaries, allGames) {
                     <th>Wins</th>
                     <th>Losses</th>
                     <th>Win %</th>
-                    <th>Last 10</th>
+                    <th>Trend</th>
                 </tr>
             </thead>
             <tbody>
@@ -229,7 +230,7 @@ function generateLeaderboard(playerSummaries, allGames) {
                 <td data-label="Wins">${playerData.totalWins}</td>
                 <td data-label="Losses">${playerData.totalLosses}</td>
                 <td data-label="Win %">${playerData.winPercentage}%</td>
-                <td data-label="Last 10">${playerData.lastTen}</td>
+                <td data-label="Trend">${playerData.trend}</td>
             </tr>
         `;
     });
@@ -275,13 +276,18 @@ function aggregateOverallData(playerSummaries) {
 }
 
 function filterGamesByYear(year) {
-    const yearParam = year >= 2025 ? year : '';
-    getGameRecords(yearParam);
-    getGameSummary(yearParam);
+    getGameRecords(year);
+    getGameSummary(year);
 
     // Update active state of year buttons
-    document.getElementById('year2025').classList.toggle('active', year === 2025);
-    document.getElementById('year2024').classList.toggle('active', year === 2024);
+    document.getElementById('year2026-h1').classList.toggle('active', year === "games_2026_h1");
+    document.getElementById('year2025-t1').classList.toggle('active', year === "games_2025_t1");
+    document.getElementById('year2025-h2').classList.toggle('active', year === "games_2025_h2");
+    document.getElementById('year2025-h1').classList.toggle('active', year === "games_2025_h1");
+    document.getElementById('year2024').classList.toggle('active', year === "games");
+    
+    // Update the hidden tournament_id field in the form
+    document.getElementById('tournament_id').value = year;
 }
 
 function updatePlayerOptions() {
@@ -308,8 +314,55 @@ function updatePlayerOptions() {
         }
     });
 
-    player1Select.value = player1Value;
-    player2Select.value = player2Value;
+    // Ensure options are populated before setting the values
+    setTimeout(() => {
+        player1Select.value = player1Value;
+        player2Select.value = player2Value;
+    }, 0);
+}
+
+function resetPlayerDropdowns() {
+    const player1Select = document.getElementById('player1');
+    const player2Select = document.getElementById('player2');
+    const allOptions = ['Akash', 'Aditya', 'Anurag', 'Bumbu', 'Karan', 'Htike', 'Manu', 'Rishabh', 'Sabari'];
+    
+    player1Select.innerHTML = '<option value="">Select Player 1</option>';
+    player2Select.innerHTML = '<option value="">Select Player 2</option>';
+    
+    allOptions.forEach(player => {
+        player1Select.innerHTML += `<option value="${player}">${player}</option>`;
+        player2Select.innerHTML += `<option value="${player}">${player}</option>`;
+    });
+}
+
+function validateBadmintonScore(score1, score2) {
+    // Check if both scores are at least 21
+    if (score1 < 21 && score2 < 21) {
+        alert('At least one player must score 21 or more points.');
+        return false;
+    }
+    
+    // Check if the winner has at least 21 points
+    const maxScore = Math.max(score1, score2);
+    if (maxScore < 21) {
+        alert('The winning score must be at least 21 points.');
+        return false;
+    }
+    
+    // Check if the difference is at least 2 points
+    const difference = Math.abs(score1 - score2);
+    if (difference < 2) {
+        alert('The score difference must be at least 2 points.');
+        return false;
+    }
+    
+    // For scores above 21, ensure the difference is exactly 2
+    if (maxScore > 21 && difference !== 2) {
+        alert('For scores above 21, the winning margin must be exactly 2 points.');
+        return false;
+    }
+    
+    return true;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -331,8 +384,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('player1').addEventListener('change', updatePlayerOptions);
     document.getElementById('player2').addEventListener('change', updatePlayerOptions);
 
-    document.getElementById('year2025').addEventListener('click', () => filterGamesByYear(2025));
-    document.getElementById('year2024').addEventListener('click', () => filterGamesByYear(2024));
+    document.getElementById('year2026-h1').addEventListener('click', () => filterGamesByYear("games_2026_h1"));
+    document.getElementById('year2025-t1').addEventListener('click', () => filterGamesByYear("games_2025_t1"));
+    document.getElementById('year2025-h2').addEventListener('click', () => filterGamesByYear("games_2025_h2"));
+    document.getElementById('year2025-h1').addEventListener('click', () => filterGamesByYear("games_2025_h1"));
+    document.getElementById('year2024').addEventListener('click', () => filterGamesByYear("games"));
 
 // Function to handle form submission
     document.getElementById("gameForm").addEventListener("submit", (e) => {
@@ -344,7 +400,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let score1 = parseInt(formData.get("score1"))
         let score2 = parseInt(formData.get("score2"))
 
+        // Validate scores before proceeding
+        if (!validateBadmintonScore(score1, score2)) {
+            return; // Stop form submission if validation fails
+        }
+
+        const tournament_id = formData.get("tournament_id");
         const gameData = {
+            tournament_id: tournament_id,
             date: formData.get("date"),
             player1: player1Name,
             player2: player2Name,
@@ -359,18 +422,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear form fields after submission
         e.target.reset();
+        
+        // Reset date and scores to defaults after clearing
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+        document.getElementById('score1').value = "21";
+        document.getElementById('score2').value = "21";
+        
+        // Reset player dropdowns to show all options
+        resetPlayerDropdowns();
     });
 
     // Initialize fetch functions
-    const currentYear = new Date().getFullYear();
-    filterGamesByYear(currentYear);
+    // const currentYear = new Date().getFullYear();
+    filterGamesByYear("games_2025_t1");
 
     // Add year select handler
     document.getElementById('yearSelect').addEventListener('change', (e) => {
-        filterGamesByYear(parseInt(e.target.value));
+        console.log(e.target.value);
+        filterGamesByYear(e.target.value);
     });
 
     // Set initial year in dropdown
-    document.getElementById('yearSelect').value = "2025";
+    document.getElementById('yearSelect').value = "games_2025_t1";
 });
 

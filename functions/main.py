@@ -14,52 +14,58 @@ initialize_app()
 
 
 # Helper function to generate the games collection name
-def get_games_collection_name(year):
-
-    if year is None or int(year) <= 2024:
+def get_games_collection_name(tournament_id):
+    # Convert to string for consistent comparison
+    if tournament_id is not None:
+        tournament_id = str(tournament_id)
+    
+    # Default to 'games' if no tournament_id provided
+    if tournament_id is None:
         return "games"
-
-    month = datetime.now().month
-    quarter = (month - 1) // 3 + 1
-
-    if int(year) == 2025 and quarter <= 2:
-        return "games_2025"
-
-    return f"games_{year}_{quarter}"
+    
+    # Return the tournament_id as-is (it should already be the collection name)
+    return tournament_id
 
 
 # Helper function to generate the summary collection name
-def get_summary_collection_name(year):
-
-    if year is None or int(year) <= 2024:
+def get_summary_collection_name(tournament_id):
+    # Convert to string for consistent comparison
+    if tournament_id is not None:
+        tournament_id = str(tournament_id)
+    
+    # Default to 'summary' if no tournament_id provided
+    if tournament_id is None:
         return "summary"
-
-    month = datetime.now().month
-    quarter = (month - 1) // 3 + 1
-
-    if int(year) == 2025 and quarter <= 2:
-        return "summary_2025"
-
-    return f"summary_{year}_{quarter}"
+    
+    # Replace 'games' prefix with 'summary' prefix
+    if tournament_id.startswith('games'):
+        return tournament_id.replace('games', 'summary', 1)
+    
+    # Return the tournament_id as-is if it already has summary prefix
+    return tournament_id
 
 
 @https_fn.on_request(
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def add_game_record(request):
-    year = datetime.now().year
-    collection_name = get_games_collection_name(year)
-
     try:
         # Update games collection
         game_data = request.get_json()
+        tournament_id = game_data.get("tournament_id")
+        
+        # Convert tournament_id to string for consistent handling
+        if tournament_id is not None:
+            tournament_id = str(tournament_id)
+        
+        collection_name = get_games_collection_name(tournament_id)
         firestore.client().collection(collection_name).add(game_data)
 
         # Update summary collection for player 1
-        update_summary(game_data["player1"], game_data["player2"], game_data["winner"], year)
+        update_summary(game_data["player1"], game_data["player2"], game_data["winner"], tournament_id)
 
         # Update summary collection for player 2
-        update_summary(game_data["player2"], game_data["player1"], game_data["winner"], year)
+        update_summary(game_data["player2"], game_data["player1"], game_data["winner"], tournament_id)
 
         return jsonify({'status': 'ok'}), 200
 
@@ -68,8 +74,8 @@ def add_game_record(request):
         return jsonify({'error': f"Failed to add game record {e}."}), 500
 
 
-def update_summary(player_name, opponent, winner, year):
-    collection_name = get_summary_collection_name(year)
+def update_summary(player_name, opponent, winner, tournamet_id):
+    collection_name = get_summary_collection_name(tournamet_id)
 
     summary_ref = firestore.client().collection(collection_name).where('player', '==', player_name).where('opponent', '==', opponent)
     docs = list(summary_ref.stream())
@@ -104,8 +110,10 @@ def update_summary(player_name, opponent, winner, year):
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def get_game_records(request):
-    year = request.args.get('year')
-    collection_name = get_games_collection_name(year)
+    tournament_id = request.args.get('year')  # Keep 'year' for backward compatibility with client
+    if tournament_id and tournament_id.isdigit():
+        tournament_id = str(tournament_id)  # Ensure it's a string for consistent comparison
+    collection_name = get_games_collection_name(tournament_id)
 
     try:
         games_ref = firestore.client().collection(collection_name).order_by('date', direction=firestore.Query.DESCENDING).stream()
@@ -124,8 +132,10 @@ def get_game_records(request):
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
 )
 def get_game_summary(request):
-    year = request.args.get('year')
-    collection_name = get_summary_collection_name(year)
+    tournament_id = request.args.get('year')  # Keep 'year' for backward compatibility with client
+    if tournament_id and tournament_id.isdigit():
+        tournament_id = str(tournament_id)  # Ensure it's a string for consistent comparison
+    collection_name = get_summary_collection_name(tournament_id)
 
     try:
         summary_ref = firestore.client().collection(collection_name).stream()
